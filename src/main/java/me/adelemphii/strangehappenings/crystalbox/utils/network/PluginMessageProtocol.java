@@ -1,22 +1,17 @@
 package me.adelemphii.strangehappenings.crystalbox.utils.network;
 
 import com.google.common.base.Preconditions;
-
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.messaging.Messenger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.nio.ByteBuffer;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Represents a protocol definition by which plugin messages ("custom packets") may be registered
@@ -33,12 +28,11 @@ import org.jetbrains.annotations.Nullable;
  *          .registerMessage(PluginMessageOutExampleMessage.class, PluginMessageOutExampleMessage::new) // 0x00
  *  );
  * </pre>
- *
+ * <p>
  * The above may be used to send clientbound/receive serverbound {@link PluginMessage PluginMessages}
  * to and from third party software listening for Minecraft's custom payload packet.
  *
  * @param <T> the plugin to which the protocol belongs
- *
  * @see PluginMessage
  * @see PluginMessageByteBuffer
  */
@@ -55,9 +49,9 @@ public class PluginMessageProtocol<@NotNull T extends Plugin> {
     /**
      * Construct a new {@link PluginMessageProtocol}.
      *
-     * @param plugin the plugin instance
-     * @param channel the channel on which this protocol is registered
-     * @param version the protocol version
+     * @param plugin                     the plugin instance
+     * @param channel                    the channel on which this protocol is registered
+     * @param version                    the protocol version
      * @param serverboundMessageSupplier the supplier to which serverbound messages should be registered
      * @param clientboundMessageSupplier the supplier to which clientbound messages should be registered
      */
@@ -107,7 +101,7 @@ public class PluginMessageProtocol<@NotNull T extends Plugin> {
     /**
      * Send the provided {@link PluginMessage} to the given {@link Player}.
      *
-     * @param player the player to which the message should be sent
+     * @param player  the player to which the message should be sent
      * @param message the message to send
      */
     public void sendMessage(@NotNull Player player, @NotNull PluginMessage<T> message) {
@@ -115,7 +109,7 @@ public class PluginMessageProtocol<@NotNull T extends Plugin> {
         Preconditions.checkArgument(message != null, "message must not be null");
 
         int messageId = getPluginMessageId(MessageDirection.CLIENTBOUND, message);
-        if (messageId < 0) {
+        if(messageId < 0) {
             throw new IllegalStateException("Invalid plugin message, " + message.getClass().getName() + ". Is it registered?");
         }
 
@@ -130,8 +124,7 @@ public class PluginMessageProtocol<@NotNull T extends Plugin> {
      * Get the integer id of the given {@link PluginMessage} and {@link MessageDirection}.
      *
      * @param direction the message direction
-     * @param message the message whose id to get
-     *
+     * @param message   the message whose id to get
      * @return the message id
      */
     public int getPluginMessageId(@NotNull MessageDirection direction, @NotNull PluginMessage<T> message) {
@@ -141,9 +134,8 @@ public class PluginMessageProtocol<@NotNull T extends Plugin> {
     /**
      * Get the integer id of the given {@link PluginMessage} and {@link MessageDirection}.
      *
-     * @param direction the message direction
+     * @param direction    the message direction
      * @param messageClass the class of the message whose id to get
-     *
      * @return the message id
      */
     public int getPluginMessageId(@NotNull MessageDirection direction, @NotNull Class<?> messageClass) {
@@ -158,7 +150,6 @@ public class PluginMessageProtocol<@NotNull T extends Plugin> {
      *
      * @param direction the message direction
      * @param messageId the id of the message to create
-     *
      * @return the created plugin message
      */
     public PluginMessage<T> createPluginMessage(@NotNull MessageDirection direction, int messageId) {
@@ -173,7 +164,6 @@ public class PluginMessageProtocol<@NotNull T extends Plugin> {
      *
      * @param direction the message direction
      * @param messageId the id of the message to check
-     *
      * @return true if valid, false otherwise
      */
     public boolean isValidMessageId(@NotNull MessageDirection direction, int messageId) {
@@ -185,7 +175,7 @@ public class PluginMessageProtocol<@NotNull T extends Plugin> {
     private void constructAndRegisterRegistry(@NotNull MessageDirection direction, @Nullable Consumer<@NotNull PluginMessageRegistry> messageSupplier) {
         Preconditions.checkArgument(direction != null, "direction must not be null");
 
-        if (messageSupplier == null) {
+        if(messageSupplier == null) {
             return;
         }
 
@@ -195,19 +185,19 @@ public class PluginMessageProtocol<@NotNull T extends Plugin> {
 
         // Register the message handlers to Bukkit
         Messenger messenger = Bukkit.getMessenger();
-        if (direction.isServerbound()) {
+        if(direction.isServerbound()) {
             messenger.registerIncomingPluginChannel(plugin, channel, (channelName, player, data) -> {
                 PluginMessageByteBuffer buffer = new PluginMessageByteBuffer(ByteBuffer.wrap(data));
 
                 try {
                     int messageId = buffer.readVarInt();
-                    if (!isValidMessageId(MessageDirection.SERVERBOUND, messageId)) {
+                    if(!isValidMessageId(MessageDirection.SERVERBOUND, messageId)) {
                         player.kickPlayer("Received invalid packet with id " + messageId + " (" + channelName + "). Contact an administrator.");
                         return;
                     }
 
                     PluginMessage<T> message = createPluginMessage(MessageDirection.SERVERBOUND, messageId);
-                    if (message == null) {
+                    if(message == null) {
                         player.kickPlayer("Received unrecognized packet with id " + messageId + " (" + channelName + "). Contact an administrator.");
                         return;
                     }
@@ -218,8 +208,7 @@ public class PluginMessageProtocol<@NotNull T extends Plugin> {
                     player.kickPlayer("Malformatted or invalid packet (" + channelName + "). Contact an administrator.");
                 }
             });
-        }
-        else if (direction.isClientbound()) {
+        } else if(direction.isClientbound()) {
             messenger.registerOutgoingPluginChannel(plugin, channel);
         }
     }
@@ -232,16 +221,15 @@ public class PluginMessageProtocol<@NotNull T extends Plugin> {
         private final Map<@NotNull Class<? extends PluginMessage<T>>, Integer> messageIds = new IdentityHashMap<>();
         private final List<@NotNull Supplier<@NotNull ? extends PluginMessage<T>>> messageConstructors = new ArrayList<>();
 
-        private PluginMessageRegistry() { }
+        private PluginMessageRegistry() {
+        }
 
         /**
          * Register a new {@link PluginMessage} to this protocol.
          *
-         * @param <M> the message
-         *
-         * @param messageClass the message class
+         * @param <M>                the message
+         * @param messageClass       the message class
          * @param messageConstructor a supplier to construct the message
-         *
          * @return this instance. Allows for chained message calls
          */
         @NotNull
@@ -252,7 +240,7 @@ public class PluginMessageProtocol<@NotNull T extends Plugin> {
             int messageId = messageIds.size();
 
             Integer existingMessageId = messageIds.put(messageClass, messageId);
-            if (existingMessageId != null) {
+            if(existingMessageId != null) {
                 throw new IllegalStateException("Attempted to register plugin message " + messageClass.getName() + " with id " + existingMessageId.intValue() + " but is already registered.");
             }
 

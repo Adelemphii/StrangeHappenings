@@ -2,7 +2,6 @@ package me.adelemphii.strangehappenings.crystalbox.utils;
 
 import me.adelemphii.strangehappenings.StrangeHappenings;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import org.bukkit.util.BoundingBox;
 
 import java.util.HashMap;

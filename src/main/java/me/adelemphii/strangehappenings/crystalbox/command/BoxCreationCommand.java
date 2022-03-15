@@ -21,7 +21,7 @@ public class BoxCreationCommand implements CommandExecutor {
         if(cmd.getName().equals("createbox")) {
             if(sender instanceof Player player) {
 
-                if (player.hasPermission("strangehappenings.createbox")) {
+                if(player.hasPermission("strangehappenings.createbox")) {
                     player.sendMessage("You have created a box!");
                     BoundingBox box = plugin.getBoxManager().createBox(player.getLocation(), 50, 50, 50);
 

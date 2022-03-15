@@ -1,10 +1,9 @@
 package me.adelemphii.strangehappenings.crystalbox.utils.network;
 
 import com.google.common.base.Preconditions;
+import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
-
-import org.jetbrains.annotations.NotNull;
 
 /**
  * A utility class to wrap a {@link ByteBuffer} (or byte array) allowing for reading
@@ -47,7 +46,6 @@ public class PluginMessageByteBuffer {
      * Write a variable-length integer.
      *
      * @param value the value to write
-     *
      * @return this instance. Allows for chained method calls
      */
     @NotNull
@@ -65,7 +63,6 @@ public class PluginMessageByteBuffer {
      * Read a variable-length integer.
      *
      * @return the read value
-     *
      * @throws IllegalStateException if the var int is too large
      */
     public int readVarInt() {
@@ -78,7 +75,7 @@ public class PluginMessageByteBuffer {
             currentByte = this.readByte();
             result |= (currentByte & 127) << size++ * 7;
 
-            if (size > 5) {
+            if(size > 5) {
                 throw new IllegalStateException("VarInt too big");
             }
         } while ((currentByte & 128) == 128);
@@ -90,7 +87,6 @@ public class PluginMessageByteBuffer {
      * Write a boolean primitive.
      *
      * @param value the value to write
-     *
      * @return this instance. Allows for chained method calls
      */
     @NotNull
@@ -112,7 +108,6 @@ public class PluginMessageByteBuffer {
      * Write an array of bytes.
      *
      * @param bytes the bytes to write
-     *
      * @return this instance. Allows for chained method calls
      */
     @NotNull
@@ -125,7 +120,6 @@ public class PluginMessageByteBuffer {
      * Write an array of bytes prefixed by a variable-length int, the size of the array.
      *
      * @param bytes the bytes to write
-     *
      * @return this instance. Allows for chained method calls
      */
     @NotNull
@@ -137,9 +131,8 @@ public class PluginMessageByteBuffer {
     /**
      * Write an array of bytes prefixed by a variable-length int.
      *
-     * @param bytes the bytes to write
+     * @param bytes  the bytes to write
      * @param length the length prefix to write
-     *
      * @return this instance. Allows for chained method calls
      */
     @NotNull
@@ -162,13 +155,12 @@ public class PluginMessageByteBuffer {
      * Read a set amount of bytes from this buffer as an array.
      *
      * @param size the amount of bytes to read
-     *
      * @return the bytes
      */
     public byte[] readBytes(int size) {
         int expectedSize = readVarInt();
 
-        if (expectedSize > size) {
+        if(expectedSize > size) {
             throw new IllegalStateException("ByteArray with size " + expectedSize + " is bigger than allowed " + size);
         }
 
@@ -192,7 +184,6 @@ public class PluginMessageByteBuffer {
      * Write a raw byte.
      *
      * @param value the value to write
-     *
      * @return this instance. Allows for chained method calls
      */
     @NotNull

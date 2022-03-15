@@ -1,7 +1,6 @@
 package me.adelemphii.strangehappenings.crystalbox.utils;
 
 import me.adelemphii.strangehappenings.StrangeHappenings;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EnderCrystal;
 import org.bukkit.entity.EntityType;
@@ -26,13 +25,13 @@ public class CrystalManager {
         crystalTask = plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
             if(crystals.isEmpty()) return;
 
-            for(Integer id : crystals.keySet()) {
+            for (Integer id : crystals.keySet()) {
                 EnderCrystal crystal = crystals.get(id);
                 BoundingBox box = plugin.getBoxManager().getBox(id);
 
                 boolean isInBox = false;
 
-                for(Player player : crystal.getWorld().getPlayers()) {
+                for (Player player : crystal.getWorld().getPlayers()) {
                     if(box.contains(player.getLocation().toVector())) {
 
                         Location playerChest = player.getLocation().add(0, -1, 0);

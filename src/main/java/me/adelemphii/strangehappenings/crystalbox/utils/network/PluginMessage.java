@@ -16,14 +16,14 @@ public interface PluginMessage<T extends Plugin> {
      *
      * @param buffer the buffer from which to read
      */
-    public void read(@NotNull PluginMessageByteBuffer buffer);
+    void read(@NotNull PluginMessageByteBuffer buffer);
 
     /**
      * Write this plugin message to the provided byte buffer.
      *
      * @param buffer the buffer to which data should be written
      */
-    public void write(@NotNull PluginMessageByteBuffer buffer);
+    void write(@NotNull PluginMessageByteBuffer buffer);
 
     /**
      * Handle the incoming of this message.
@@ -31,6 +31,6 @@ public interface PluginMessage<T extends Plugin> {
      * @param plugin the plugin that received this message.
      * @param player the player that sent the message
      */
-    public void handle(@NotNull T plugin, @NotNull Player player);
+    void handle(@NotNull T plugin, @NotNull Player player);
 
 }
