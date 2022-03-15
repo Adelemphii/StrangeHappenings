@@ -1,0 +1,10 @@
+name: StrangeHappenings
+version: '${project.version}'
+main: me.adelemphii.strangehappenings.StrangeHappenings
+api-version: 1.17
+
+commands:
+  createbox:
+    description: Create a box
+    aliases:
+      - cb
